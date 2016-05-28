@@ -25,6 +25,14 @@ Working directory: $ProjectFileDir$
 ```
 
 ```
+name: ct
+group: rebar3
+Program: rebar3
+parameters: ct
+Working directory: $ProjectFileDir$
+```
+
+```
 name: clean
 group: rebar3
 Program: sh
