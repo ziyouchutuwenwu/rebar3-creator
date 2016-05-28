@@ -7,27 +7,35 @@ escript为独立运行的es脚本
 
 
 idea内配置, 选项, 添加自定义工具
-
+--------
+```
 name: compile
 group: rebar3
 Program: rebar3
 parameters: compile
 Working directory: $ProjectFileDir$
+```
 
+```
 name: clean
 group: rebar3
 Program: rebar3
 parameters: clean
 Working directory: $ProjectFileDir$
+```
 
+```
 name: eunit
 group: rebar3
 Program: rebar3
 parameters: eunit
 Working directory: $ProjectFileDir$
+```
 
+```
 name: tar
 group: rebar3
 Program: rebar3
 parameters: tar
 Working directory: $ProjectFileDir$
+```
