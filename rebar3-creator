@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+
+import shutil
+import os
+import sys
+
+#rebar.config
+class Config:
+    def __init__(self, configFile):
+        self.__configFile = configFile
+
+    def replace(self, oldContent, newContent, isWrapEnabled):
+        self.makeBakFile()
+
+        bakFile = open(self.getBakFileName(), "r+")
+        newFile = open(self.__configFile, "w+")
+
+        wrapContentToReplace = oldContent
+        if isWrapEnabled:
+            wrapContentToReplace += "\n"
+
+        for line in bakFile.readlines():
+            if line == wrapContentToReplace or line == oldContent:
+                line = newContent
+            newFile.write(line)
+        bakFile.close()
+        self.removeBakFile()
+        newFile.close()
+
+    def makeBakFile(self):
+        shutil.copyfile(self.__configFile, self.getBakFileName())
+
+    def removeBakFile(self):
+        os.remove(self.getBakFileName())
+
+    def getBakFileName(self):
+        return self.__configFile + ".bak"
+
+# eunit
+class Eunit:
+    def __init__(self, fileName):
+        self.__modulePath = os.path.split(fileName)[0]
+        self.__moduleName = os.path.splitext(os.path.split(fileName)[1])[0]
+        self.__fileName = fileName
+
+    def writeTemplateFile(self):
+        self.checkDir()
+
+        content = "-module(%s).\r\n" % (self.__moduleName)
+
+        content += "\r\n"
+        content += "-include_lib(\"eunit/include/eunit.hrl\").\r\n"
+        content += "\r\n"
+        content += "simple_test() ->\r\n"
+        content += "    ?assert(true).\r\n"
+
+        file = open(self.__fileName, "w+")
+        file.write(content)
+        file.close()
+
+    def checkDir(self):
+        isExisted = os.path.exists(self.__modulePath)
+        if not isExisted:
+            os.makedirs(self.__modulePath)
+        return
+
+class Example:
+    @staticmethod
+    def createDir(examplePath):
+        isExists = os.path.exists(examplePath)
+        if not isExists:
+            os.makedirs(examplePath)
+        return
+
+# different path
+class PathHelper:
+    @staticmethod
+    def getRebarConfigPath(relPath, projectName, rebarConfigFileName):
+        return os.path.join(relPath, projectName, rebarConfigFileName)
+
+    @staticmethod
+    def getEunitFilePath(relPath, projectName, projectType, eUnitTemplateFileName):
+        if projectType == "release":
+            return os.path.join(relPath, projectName, "apps", projectName,"test", eUnitTemplateFileName)
+        else:
+            return os.path.join(relPath, projectName, "test", eUnitTemplateFileName)
+
+    @staticmethod
+    def getExamplePath(relPath, projectName, projectType):
+        if projectType == "release":
+            return os.path.join(relPath, projectName, "apps", projectName, "src", "example")
+        else:
+            return os.path.join(relPath, projectName, "src", "example")
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        print "please input mode, release, app, lib, escript?"
+        os._exit(0)
+
+    elif len(sys.argv) == 2:
+        print "project_name?"
+        os._exit(0)
+
+    projectType = sys.argv[1]
+    projectName = sys.argv[2]
+    relPath = os.getcwd()
+
+    if projectType == "release":
+        os.system('rebar3 new release ' + projectName)
+    elif projectType == "app":
+        os.system('rebar3 new app ' + projectName)
+    elif projectType == "lib":
+        os.system('rebar3 new lib ' + projectName)
+    elif projectType == "escript":
+        os.system('rebar3 new escript ' + projectName)
+    else:
+        print "not supported"
+        os._exit(0)
+
+    configFile = Config(PathHelper.getRebarConfigPath(relPath, projectName, "rebar.config"))
+
+    configFile.replace("{erl_opts, [debug_info]}.",
+
+                       "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
+                       + "%%  {erl_opts, [no_debug_info]}. \r\n"
+                       + "%%  {erl_opts, [debug_info]}. \r\n"
+                       + "\r\n"
+                       + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
+                       + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
+                       + "%%  vim ~/.erlang.crypt \r\n"
+                       + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
+                       + "\r\n"
+                       + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
+                       + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
+                       + "\r\n"
+                       + "%%  ~/.erlang.crypt needed on compiling\r\n"
+                       + "{erl_opts, [encrypt_debug_info]}.\n",
+                       True)
+
+    configFile.replace("{deps, []}.",
+
+                       "{deps, [\r\n"
+                       + "  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
+                       + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
+                       + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
+                       + "]}.\r\n"
+
+                       #options for eunit
+                       + "{cover_enabled, true}.\r\n"
+                       + "{eunit_opts, [verbose, {report,{eunit_surefire,[{dir,\".\"}]}}]}.\r\n",
+                       True)
+
+    eunitFilePath = PathHelper.getEunitFilePath(relPath, projectName, projectType, "template_test.erl")
+    eunit = Eunit(eunitFilePath)
+    eunit.writeTemplateFile()
+
+    Example.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
