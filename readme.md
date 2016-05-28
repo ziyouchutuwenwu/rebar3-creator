@@ -17,18 +17,18 @@ Working directory: $ProjectFileDir$
 ```
 
 ```
-name: clean
-group: rebar3
-Program: rebar3
-parameters: clean
-Working directory: $ProjectFileDir$
-```
-
-```
 name: eunit
 group: rebar3
 Program: rebar3
 parameters: eunit
+Working directory: $ProjectFileDir$
+```
+
+```
+name: clean
+group: rebar3
+Program: sh
+parameters: clean.sh
 Working directory: $ProjectFileDir$
 ```
 

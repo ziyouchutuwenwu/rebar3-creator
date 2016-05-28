@@ -38,11 +38,8 @@ class Config:
 
 # eunit
 class TestSetting:
-    def __init__(self, path):
-        self.__modulePath = path
-        # self.__modulePath = os.path.split(fileName)[0]
-        # self.__moduleName = os.path.splitext(os.path.split(fileName)[1])[0]
-        # self.__fileName = fileName
+    def __init__(self, dirPath):
+        self.__modulePath = dirPath
 
     def writeEunitTemplate(self, eunitTemplateFileName):
         self.checkDir()
@@ -158,8 +155,26 @@ class ExampleSetting:
             os.makedirs(examplePath)
         return
 
+class ScriptUtility:
+    @staticmethod
+    def createCleanScript(basicPath, scriptName):
+
+        content = "#!/bin/bash\n"
+        content += "\n"
+        content += "rm -rf ./_build/test\n"
+        content += "rebar3 clean"
+
+        fullPath = os.path.join(basicPath, scriptName)
+        file = open(fullPath, "w+")
+        file.write(content)
+        file.close()
+
 # different path
 class PathHelper:
+    @staticmethod
+    def getAppPath(relPath, projectName):
+        return os.path.join(relPath, projectName)
+
     @staticmethod
     def getRebarConfigPath(relPath, projectName, rebarConfigFileName):
         return os.path.join(relPath, projectName, rebarConfigFileName)
@@ -248,9 +263,9 @@ if __name__ == '__main__':
 
                        True)
 
-    testDirPath = PathHelper.getTestDirPath(relPath, projectName, projectType)
-    testSetting = TestSetting(testDirPath)
+    testSetting = TestSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
     testSetting.writeEunitTemplate("template_eunit_test.erl")
     testSetting.writeCtTemplate("template_SUITE.erl")
 
     ExampleSetting.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
+    ScriptUtility.createCleanScript(PathHelper.getAppPath(relPath, projectName), "clean.sh")
