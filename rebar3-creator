@@ -2,6 +2,7 @@
 
 import shutil
 import os
+import string
 import sys
 
 #rebar.config
@@ -9,19 +10,15 @@ class Config:
     def __init__(self, configFile):
         self.__configFile = configFile
 
-    def replace(self, oldContent, newContent, isWrapEnabled):
+    def replace(self, oldContent, newContent):
         self.makeBakFile()
 
         bakFile = open(self.getBakFileName(), "r+")
         newFile = open(self.__configFile, "w+")
 
-        wrapContentToReplace = oldContent
-        if isWrapEnabled:
-            wrapContentToReplace += "\n"
-
         for line in bakFile.readlines():
-            if line == wrapContentToReplace or line == oldContent:
-                line = newContent
+            if( string.find(line,oldContent) != -1 ):
+                line = line.replace(oldContent,newContent)
             newFile.write(line)
         bakFile.close()
         self.removeBakFile()
@@ -222,8 +219,7 @@ if __name__ == '__main__':
 
     configFile.replace("{erl_opts, [debug_info]}.",
 
-                       "\r\n"
-                       + "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
+                       "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
                        + "%%  {erl_opts, [no_debug_info]}. \r\n"
                        + "%%  {erl_opts, [debug_info]}. \r\n"
                        + "\r\n"
@@ -236,13 +232,11 @@ if __name__ == '__main__':
                        + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
                        + "\r\n"
                        + "%%  ~/.erlang.crypt needed on compiling\r\n"
-                       + "{erl_opts, [encrypt_debug_info]}.\n",
-                       True)
+                       + "{erl_opts, [encrypt_debug_info]}.\n")
 
     configFile.replace("{deps, []}.",
 
-                       "\r\n"
-                       + "{deps, [\r\n"
+                       "{deps, [\r\n"
                        + "  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
                        + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
                        + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
@@ -259,9 +253,7 @@ if __name__ == '__main__':
                        + "            ]\r\n"
                        + "        }\r\n"
                        + "    }\r\n"
-                       + "]}.\r\n",
-
-                       True)
+                       + "]}.\r\n")
 
     testSetting = TestSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
     testSetting.writeEunitTemplate("template_eunit_test.erl")
