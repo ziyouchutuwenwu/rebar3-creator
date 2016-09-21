@@ -52,7 +52,12 @@ class EscriptSetting:
         content += "-export([main/1]).\r\n"
         content += "\r\n"
         content += "main(Args) ->\r\n"
-        content += "    sync:go()."
+        content += "  io:format(\"~n\"),\r\n"
+        content += "  io:format(\"*********************************************************~n\"),\r\n"
+        content += "  io:format(\"please manully run sync:go() if code hot reload not work!~n\"),\r\n"
+        content += "  io:format(\"*********************************************************~n\"),\r\n"
+        content += "  io:format(\"~n\"),\r\n"
+        content += "  sync:go()."
 
         fullPath = os.path.join(self.__modulePath, escriptFileName)
         file = open(fullPath, "w+")
@@ -296,4 +301,3 @@ if __name__ == '__main__':
     escriptSetting.writeEscriptTemplate("on_app_start.erl")
 
     ExampleSetting.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
-    # ScriptUtility.createCleanScript(PathHelper.getAppPath(relPath, projectName), "clean.sh")
