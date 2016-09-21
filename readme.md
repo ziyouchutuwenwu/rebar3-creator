@@ -35,8 +35,8 @@ Working directory: $ProjectFileDir$
 ```
 name: clean
 group: rebar3
-Program: sh
-parameters: clean.sh
+Program: rebar3
+parameters: clean
 Working directory: $ProjectFileDir$
 ```
 

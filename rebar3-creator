@@ -10,6 +10,11 @@ class Config:
     def __init__(self, configFile):
         self.__configFile = configFile
 
+    def append(self, content):
+        file = open(self.__configFile, "a+")
+        file.write(content)
+        file.close()
+
     def replace(self, oldContent, newContent):
         self.makeBakFile()
 
@@ -33,8 +38,29 @@ class Config:
     def getBakFileName(self):
         return self.__configFile + ".bak"
 
+# escipt
+class EscriptSetting:
+    def __init__(self, dirPath):
+        self.__modulePath = dirPath
+
+    def writeEscriptTemplate(self, escriptFileName):
+
+        moduleName = os.path.splitext(escriptFileName)[0]
+        content = "-module(%s).\r\n" % (moduleName)
+
+        content += "\r\n"
+        content += "-export([main/1]).\r\n"
+        content += "\r\n"
+        content += "main(Args) ->\r\n"
+        content += "    sync:go()."
+
+        fullPath = os.path.join(self.__modulePath, escriptFileName)
+        file = open(fullPath, "w+")
+        file.write(content)
+        file.close()
+
 # eunit
-class TestSetting:
+class TestTemplateSetting:
     def __init__(self, dirPath):
         self.__modulePath = dirPath
 
@@ -152,19 +178,19 @@ class ExampleSetting:
             os.makedirs(examplePath)
         return
 
-class ScriptUtility:
-    @staticmethod
-    def createCleanScript(basicPath, scriptName):
-
-        content = "#!/bin/bash\n"
-        content += "\n"
-        content += "rm -rf ./_build/test\n"
-        content += "rebar3 clean"
-
-        fullPath = os.path.join(basicPath, scriptName)
-        file = open(fullPath, "w+")
-        file.write(content)
-        file.close()
+# class ScriptUtility:
+#     @staticmethod
+#     def createCleanScript(basicPath, scriptName):
+#
+#         content = "#!/bin/bash\n"
+#         content += "\n"
+#         content += "rm -rf ./_build/test\n"
+#         content += "rebar3 clean"
+#
+#         fullPath = os.path.join(basicPath, scriptName)
+#         file = open(fullPath, "w+")
+#         file.write(content)
+#         file.close()
 
 # different path
 class PathHelper:
@@ -240,10 +266,17 @@ if __name__ == '__main__':
                        + "  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
                        + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
                        + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
-                       + "]}.\r\n"
+                       + "]}.\r\n")
 
-                       #options for eunit
-                       + "\r\n"
+    configFile.append("\r\n"
+                      + "{pre_hooks, [ \r\n"
+                      + "  {clean, \"rm -rf ./_build/test\"}\r\n"
+                      + "]}.\r\n"
+                      + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
+                      + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
+
+    # options for eunit
+    configFile.append("\r\n"
                        + "{cover_enabled, true}.\r\n"
                        + "{eunit_opts, [\r\n"
                        + "    verbose, {\r\n"
@@ -255,9 +288,12 @@ if __name__ == '__main__':
                        + "    }\r\n"
                        + "]}.\r\n")
 
-    testSetting = TestSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
-    testSetting.writeEunitTemplate("template_eunit_test.erl")
-    testSetting.writeCtTemplate("template_SUITE.erl")
+    testTemplateSetting = TestTemplateSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
+    testTemplateSetting.writeEunitTemplate("template_eunit_test.erl")
+    testTemplateSetting.writeCtTemplate("template_SUITE.erl")
+
+    escriptSetting = EscriptSetting(PathHelper.getAppPath(relPath, projectName))
+    escriptSetting.writeEscriptTemplate("on_app_start.erl")
 
     ExampleSetting.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
-    ScriptUtility.createCleanScript(PathHelper.getAppPath(relPath, projectName), "clean.sh")
+    # ScriptUtility.createCleanScript(PathHelper.getAppPath(relPath, projectName), "clean.sh")
