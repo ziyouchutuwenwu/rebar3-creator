@@ -5,8 +5,19 @@ import os
 import string
 import sys
 
-#rebar.config
-class Config:
+#global rebar3 config for auto compiling
+class GlobalRebar3Config:
+    @staticmethod
+    def removeConfig():
+        os.system('rm -rf ~/.config/rebar3/rebar.config')
+
+    @staticmethod
+    def setConfig():
+        os.system('echo  "{plugins, [rebar3_auto]}." > ~/.config/rebar3/rebar.config')
+
+
+#rebar.config in project
+class ProjectRebarConfig:
     def __init__(self, configFile):
         self.__configFile = configFile
 
@@ -54,10 +65,9 @@ class EscriptSetting:
         content += "main(Args) ->\r\n"
         content += "  io:format(\"~n\"),\r\n"
         content += "  io:format(\"*********************************************************~n\"),\r\n"
-        content += "  io:format(\"please manully run sync:go() if code hot reload not work!~n\"),\r\n"
+        content += "  io:format(\"on app start~n\"),\r\n"
         content += "  io:format(\"*********************************************************~n\"),\r\n"
-        content += "  io:format(\"~n\"),\r\n"
-        content += "  sync:go()."
+        content += "  io:format(\"~n\")."
 
         fullPath = os.path.join(self.__modulePath, escriptFileName)
         file = open(fullPath, "w+")
@@ -246,52 +256,76 @@ if __name__ == '__main__':
         print "not supported"
         os._exit(0)
 
-    configFile = Config(PathHelper.getRebarConfigPath(relPath, projectName, "rebar.config"))
+    projectConfigFile = ProjectRebarConfig(PathHelper.getRebarConfigPath(relPath, projectName, "rebar.config"))
 
-    configFile.replace("{erl_opts, [debug_info]}.",
+    projectConfigFile.replace("{erl_opts, [debug_info]}.",
 
-                       "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
-                       + "%%  {erl_opts, [no_debug_info]}. \r\n"
-                       + "%%  {erl_opts, [debug_info]}. \r\n"
-                       + "\r\n"
-                       + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
-                       + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
-                       + "%%  vim ~/.erlang.crypt \r\n"
-                       + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
-                       + "\r\n"
-                       + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
-                       + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
-                       + "\r\n"
-                       + "%%  ~/.erlang.crypt needed on compiling\r\n"
-                       + "{erl_opts, [encrypt_debug_info]}.\n")
+                              "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
+                              + "%%  {erl_opts, [no_debug_info]}. \r\n"
+                              + "%%  {erl_opts, [debug_info]}. \r\n"
+                              + "\r\n"
+                              + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
+                              + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
+                              + "%%  vim ~/.erlang.crypt \r\n"
+                              + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
+                              + "\r\n"
+                              + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
+                              + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
+                              + "\r\n"
+                              + "%%  ~/.erlang.crypt needed on compiling\r\n"
+                              + "{erl_opts, [encrypt_debug_info]}.\n")
 
-    configFile.replace("{deps, []}.",
+    projectConfigFile.replace("{deps, []}.",
 
-                       "{deps, [\r\n"
-                       + "  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
-                       + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
-                       + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
-                       + "]}.\r\n")
+                              "{deps, [\r\n"
+                              + "%%  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
+                              + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
+                              + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
+                              + "]}.\r\n")
 
-    configFile.append("\r\n"
-                      + "{pre_hooks, [ \r\n"
-                      + "  {clean, \"rm -rf ./_build/test\"}\r\n"
-                      + "]}.\r\n"
-                      + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
-                      + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
+    projectConfigFile.append("\r\n"
+                             + "{pre_hooks, [ \r\n"
+                             + "  {clean, \"rm -rf ./_build/test\"}\r\n"
+                             + "]}.\r\n"
+                             + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
+                             + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
 
     # options for eunit
-    configFile.append("\r\n"
-                       + "{cover_enabled, true}.\r\n"
-                       + "{eunit_opts, [\r\n"
-                       + "    verbose, {\r\n"
-                       + "        report,{\r\n"
-                       + "            eunit_surefire,[\r\n"
-                       + "                {dir,\"./_build/test\"}\r\n"
-                       + "            ]\r\n"
-                       + "        }\r\n"
-                       + "    }\r\n"
-                       + "]}.\r\n")
+    projectConfigFile.append("\r\n"
+                             + "{cover_enabled, true}.\r\n"
+                             + "{eunit_opts, [\r\n"
+                             + "    verbose, {\r\n"
+                             + "        report,{\r\n"
+                             + "            eunit_surefire,[\r\n"
+                             + "                {dir,\"./_build/test\"}\r\n"
+                             + "            ]\r\n"
+                             + "        }\r\n"
+                             + "    }\r\n"
+                             + "]}.\r\n")
+
+
+    class UpdateReadMe:
+        @staticmethod
+        def update(path, fileName):
+            content = "rebar3 auto"
+            content += "\r\n"
+            content += "------------------for auto compile------------------"
+
+            content += "\r\n"
+            content += "\r\n"
+            content += "rebar3 compile"
+            content += "\r\n"
+            content += "rebar3 shell"
+            content += "\r\n"
+            content += "rebar3 clean"
+
+            fullPath = os.path.join(path, fileName)
+            file = open(fullPath, "w+")
+            file.write(content)
+            file.close()
+
+    GlobalRebar3Config.removeConfig()
+    GlobalRebar3Config.setConfig()
 
     testTemplateSetting = TestTemplateSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
     testTemplateSetting.writeEunitTemplate("template_eunit_test.erl")
@@ -301,3 +335,5 @@ if __name__ == '__main__':
     escriptSetting.writeEscriptTemplate("on_app_start.erl")
 
     ExampleSetting.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
+
+    UpdateReadMe.update(PathHelper.getAppPath(relPath, projectName), "README.md")
