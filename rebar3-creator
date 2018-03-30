@@ -33,7 +33,7 @@ class ProjectRebarConfig:
         newFile = open(self.__configFile, "w+")
 
         for line in bakFile.readlines():
-            if( string.find(line,oldContent) != -1 ):
+            if( line.find(oldContent) != -1 ):
                 line = line.replace(oldContent,newContent)
             newFile.write(line)
         bakFile.close()
@@ -233,11 +233,11 @@ class PathHelper:
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        print "please input mode, release, app, lib, escript?"
+        print("please input mode, release, app, lib, escript?")
         os._exit(0)
 
     elif len(sys.argv) == 2:
-        print "project_name?"
+        print("project_name?")
         os._exit(0)
 
     projectType = sys.argv[1]
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     elif projectType == "escript":
         os.system('rebar3 new escript ' + projectName)
     else:
-        print "not supported"
+        print("not supported")
         os._exit(0)
 
     projectConfigFile = ProjectRebarConfig(PathHelper.getRebarConfigPath(relPath, projectName, "rebar.config"))
