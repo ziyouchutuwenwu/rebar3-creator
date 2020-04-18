@@ -4,19 +4,19 @@ import shutil
 import os
 import sys
 
-#global rebar3 config for auto compiling
+# global rebar3 config for auto compiling
 class GlobalRebar3Config:
     @staticmethod
     def remove_config():
-        os.system('rm -rf ~/.config/rebar3')
+        os.system("rm -rf ~/.config/rebar3")
 
     @staticmethod
     def set_config():
-        os.system('mkdir -p ~/.config/rebar3')
+        os.system("mkdir -p ~/.config/rebar3")
         os.system('echo  "{plugins, [rebar3_auto]}." > ~/.config/rebar3/rebar.config')
 
 
-#rebar.config in project
+# rebar.config in project
 class ProjectRebarConfig:
     def __init__(self, config_file):
         self.__config_file = config_file
@@ -33,7 +33,7 @@ class ProjectRebarConfig:
         new_file = open(self.__config_file, "w+")
 
         for line in bak_file.readlines():
-            if( line.find(old_content) != -1):
+            if line.find(old_content) != -1:
                 line = line.replace(old_content, new_content)
             new_file.write(line)
         bak_file.close()
@@ -49,6 +49,7 @@ class ProjectRebarConfig:
     def get_bak_file_name(self):
         return self.__config_file + ".bak"
 
+
 # escipt
 class EscriptSetting:
     def __init__(self, dir_path):
@@ -63,16 +64,17 @@ class EscriptSetting:
         content += "-export([main/1]).\r\n"
         content += "\r\n"
         content += "main(Args) ->\r\n"
-        content += "  io:format(\"~n\"),\r\n"
-        content += "  io:format(\"*********************************************************~n\"),\r\n"
-        content += "  io:format(\"on app start~n\"),\r\n"
-        content += "  io:format(\"*********************************************************~n\"),\r\n"
-        content += "  io:format(\"~n\")."
+        content += '  io:format("~n"),\r\n'
+        content += '  io:format("*********************************************************~n"),\r\n'
+        content += '  io:format("on app start~n"),\r\n'
+        content += '  io:format("*********************************************************~n"),\r\n'
+        content += '  io:format("~n").'
 
         fullPath = os.path.join(self.__module_path, escriptFileName)
         file = open(fullPath, "w+")
         file.write(content)
         file.close()
+
 
 # eunit
 class TestTemplateSetting:
@@ -86,7 +88,7 @@ class TestTemplateSetting:
         content = "-module(%s).\r\n" % (moduleName)
 
         content += "\r\n"
-        content += "-include_lib(\"eunit/include/eunit.hrl\").\r\n"
+        content += '-include_lib("eunit/include/eunit.hrl").\r\n'
         content += "\r\n"
         content += "simple_test() ->\r\n"
         content += "    ?assert(true)."
@@ -101,11 +103,13 @@ class TestTemplateSetting:
 
         module_name = os.path.splitext(ct_template_file_name)[0]
 
-        content = "%% http://erlang.org/doc/apps/common_test/write_test_chapter.html\r\n"
+        content = (
+            "%% http://erlang.org/doc/apps/common_test/write_test_chapter.html\r\n"
+        )
         content += "-module(%s).\r\n" % (module_name)
 
         content += "\r\n"
-        content += "-include_lib(\"common_test/include/ct.hrl\").\r\n"
+        content += '-include_lib("common_test/include/ct.hrl").\r\n'
         content += "\r\n"
         content += "-compile(export_all).\r\n"
         content += "\r\n"
@@ -114,7 +118,7 @@ class TestTemplateSetting:
         content += "  [\r\n"
         content += "    {timetrap, {seconds, 20}},\r\n"
         content += "      {userdata,[\r\n"
-        content += "        {info, \"this is a common test template.\"}\r\n"
+        content += '        {info, "this is a common test template."}\r\n'
         content += "      ]}\r\n"
         content += "  ].\r\n"
 
@@ -134,44 +138,44 @@ class TestTemplateSetting:
         content += "  ].\r\n"
         content += "\r\n"
         content += "init_per_suite(Config) ->\r\n"
-        content += "  ct:log(\"init_per_suite~n\"),\r\n"
+        content += '  ct:log("init_per_suite~n"),\r\n'
         content += "  Config.\r\n"
         content += "\r\n"
         content += "end_per_suite(_Config) ->\r\n"
-        content += "  ct:log(\"end_per_suite~n\"),\r\n"
+        content += '  ct:log("end_per_suite~n"),\r\n'
         content += "  ok.\r\n"
         content += "\r\n"
         content += "init_per_group(Group, Config) ->\r\n"
-        content += "  ct:log(\"init_per_group~p~n\",[Group]),\r\n"
+        content += '  ct:log("init_per_group~p~n",[Group]),\r\n'
         content += "  Config.\r\n"
         content += "\r\n"
         content += "end_per_group(Group, Config) ->\r\n"
-        content += "  ct:log(\"end_per_group~p~n\",[Group]),\r\n"
+        content += '  ct:log("end_per_group~p~n",[Group]),\r\n'
         content += "  Config.\r\n"
         content += "\r\n"
         content += "init_per_testcase(TestCase, Config) ->\r\n"
-        content += "  ct:log(\"init_per_testcase~p~n\",[TestCase]),\r\n"
+        content += '  ct:log("init_per_testcase~p~n",[TestCase]),\r\n'
         content += "  Config.\r\n"
         content += "\r\n"
         content += "end_per_testcase(TestCase, Config) ->\r\n"
-        content += "  ct:log(\"end_per_testcase~p~n\",[TestCase]),\r\n"
+        content += '  ct:log("end_per_testcase~p~n",[TestCase]),\r\n'
         content += "  Config.\r\n"
         content += "\r\n"
         content += "%% --------------------------------------------------------\r\n"
         content += "test_case1(_Config) ->\r\n"
-        content += "  ct:log(\"in test_case1~n\"),\r\n"
-        content += "  {skip, \"Not implemented.\"}.\r\n"
+        content += '  ct:log("in test_case1~n"),\r\n'
+        content += '  {skip, "Not implemented."}.\r\n'
         content += "\r\n"
         content += "test_case2(_Config) ->\r\n"
-        content += "  ct:log(\"in test_case2~n\"),\r\n"
+        content += '  ct:log("in test_case2~n"),\r\n'
         content += "  1=1.\r\n"
         content += "\r\n"
         content += "test_case3(_Config) ->\r\n"
-        content += "  ct:log(\"in test_case3~n\"),\r\n"
+        content += '  ct:log("in test_case3~n"),\r\n'
         content += "  1=1.\r\n"
         content += "\r\n"
         content += "test_case4(_Config) ->\r\n"
-        content += "  ct:log(\"in test_case4~n\"),\r\n"
+        content += '  ct:log("in test_case4~n"),\r\n'
         content += "  1=1."
 
         fullPath = os.path.join(self.__module_path, ct_template_file_name)
@@ -185,6 +189,7 @@ class TestTemplateSetting:
             os.makedirs(self.__module_path)
         return
 
+
 class ExampleSetting:
     @staticmethod
     def create_dir(example_path):
@@ -192,6 +197,7 @@ class ExampleSetting:
         if not is_exists:
             os.makedirs(example_path)
         return
+
 
 # class ScriptUtility:
 #     @staticmethod
@@ -227,11 +233,14 @@ class PathHelper:
     @staticmethod
     def get_example_path(rel_path, project_name, project_type):
         if project_type == "release":
-            return os.path.join(rel_path, project_name, "apps", project_name, "src", "example")
+            return os.path.join(
+                rel_path, project_name, "apps", project_name, "src", "example"
+            )
         else:
             return os.path.join(rel_path, project_name, "src", "example")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("please input mode, release, app, lib, escript?")
         os._exit(0)
@@ -245,79 +254,84 @@ if __name__ == '__main__':
     rel_path = os.getcwd()
 
     if project_type == "release":
-        os.system('rebar3 new release ' + project_name)
+        os.system("rebar3 new release " + project_name)
     elif project_type == "app":
-        os.system('rebar3 new app ' + project_name)
+        os.system("rebar3 new app " + project_name)
     elif project_type == "lib":
-        os.system('rebar3 new lib ' + project_name)
+        os.system("rebar3 new lib " + project_name)
     elif project_type == "escript":
-        os.system('rebar3 new escript ' + project_name)
+        os.system("rebar3 new escript " + project_name)
     else:
         print("not supported")
         os._exit(0)
 
-    project_config_file = ProjectRebarConfig(PathHelper.get_rebar_config_path(rel_path, project_name, "rebar.config"))
+    project_config_file = ProjectRebarConfig(
+        PathHelper.get_rebar_config_path(rel_path, project_name, "rebar.config")
+    )
 
-    project_config_file.replace("{erl_opts, [debug_info]}.",
+    project_config_file.replace(
+        "{erl_opts, [debug_info]}.",
+        "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
+        + "%%  {erl_opts, [no_debug_info]}. \r\n"
+        + "%%  {erl_opts, [debug_info]}. \r\n"
+        + "\r\n"
+        + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
+        + '%%  io:fwrite("~s~n", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n'
+        + "%%  vim ~/.erlang.crypt \r\n"
+        + '%%  [{debug_info, des3_cbc, [], "12345"}]. \r\n'
+        + "\r\n"
+        + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
+        + '%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,"12345"}}]}. \r\n'
+        + "\r\n"
+        + "%%  ~/.erlang.crypt needed on compiling\r\n"
+        + "{erl_opts, [encrypt_debug_info]}.\n",
+    )
 
-                              "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
-                                + "%%  {erl_opts, [no_debug_info]}. \r\n"
-                                + "%%  {erl_opts, [debug_info]}. \r\n"
-                                + "\r\n"
-                                + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
-                                + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
-                                + "%%  vim ~/.erlang.crypt \r\n"
-                                + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
-                                + "\r\n"
-                                + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
-                                + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
-                                + "\r\n"
-                                + "%%  ~/.erlang.crypt needed on compiling\r\n"
-                                + "{erl_opts, [encrypt_debug_info]}.\n")
+    project_config_file.replace(
+        "{deps, []}.",
+        "{deps, [\r\n"
+        + '%%  {sync, ".*", {git, "https://github.com/rustyio/sync", {branch, "master"}}} \r\n'
+        + '%%  {cowboy, ".*",{git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}},\r\n'
+        + '%%  {cowboy, "1.0.4",{git, "https://github.com/ninenines/cowboy.git", {tag, "1.0.4"}}}\r\n'
+        + "]}.\r\n",
+    )
 
-    project_config_file.replace("{deps, []}.",
-
-                              "{deps, [\r\n"
-                                + "%%  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
-                                + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
-                                + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
-                                + "]}.\r\n")
-
-    project_config_file.append("\r\n"
-                               + "{pre_hooks, [ \r\n"
-                               + "  {clean, \"rm -rf ./_build/test\"}\r\n"
-                               + "]}.\r\n"
-                               + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
-                               + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
+    project_config_file.append(
+        "\r\n"
+        + "{pre_hooks, [ \r\n"
+        + '  {clean, "rm -rf ./_build/test"}\r\n'
+        + "]}.\r\n"
+        + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
+        + '{shell, [{script_file, "on_app_start.erl"}]}.\r\n'
+    )
 
     # options for eunit
-    project_config_file.append("\r\n"
-                               + "{cover_enabled, true}.\r\n"
-                               + "{eunit_opts, [\r\n"
-                               + "    verbose, {\r\n"
-                               + "        report,{\r\n"
-                               + "            eunit_surefire,[\r\n"
-                               + "                {dir,\"./_build/test\"}\r\n"
-                               + "            ]\r\n"
-                               + "        }\r\n"
-                               + "    }\r\n"
-                               + "]}.\r\n")
-
+    project_config_file.append(
+        "\r\n"
+        + "{cover_enabled, true}.\r\n"
+        + "{eunit_opts, [\r\n"
+        + "    verbose, {\r\n"
+        + "        report,{\r\n"
+        + "            eunit_surefire,[\r\n"
+        + '                {dir,"./_build/test"}\r\n'
+        + "            ]\r\n"
+        + "        }\r\n"
+        + "    }\r\n"
+        + "]}.\r\n"
+    )
 
     class UpdateReadMe:
         @staticmethod
         def update(path, file_name):
-            content = "rebar3 auto"
+            content = "# 说明"
             content += "\r\n"
-            content += "------------------for auto compile------------------"
-
+            content += "## `rebar3 deps` 获取依赖"
             content += "\r\n"
+            content += "## `rebar3 compile` 编译"
             content += "\r\n"
-            content += "rebar3 compile"
+            content += "## `rebar3 shell` 进入调试 shell"
             content += "\r\n"
-            content += "rebar3 shell"
-            content += "\r\n"
-            content += "rebar3 clean"
+            content += "## `rebar3 as prod tar` 打包"
 
             fullPath = os.path.join(path, file_name)
             file = open(fullPath, "w+")
@@ -327,13 +341,17 @@ if __name__ == '__main__':
     GlobalRebar3Config.remove_config()
     GlobalRebar3Config.set_config()
 
-    test_template_setting = TestTemplateSetting(PathHelper.get_test_dir_path(rel_path, project_name, project_type))
+    test_template_setting = TestTemplateSetting(
+        PathHelper.get_test_dir_path(rel_path, project_name, project_type)
+    )
     test_template_setting.writeEunitTemplate("template_eunit_test.erl")
     test_template_setting.writeCtTemplate("template_SUITE.erl")
 
     escript_setting = EscriptSetting(PathHelper.get_app_path(rel_path, project_name))
     escript_setting.writeEscriptTemplate("on_app_start.erl")
 
-    ExampleSetting.create_dir(PathHelper.get_example_path(rel_path, project_name, project_type))
+    ExampleSetting.create_dir(
+        PathHelper.get_example_path(rel_path, project_name, project_type)
+    )
 
     UpdateReadMe.update(PathHelper.get_app_path(rel_path, project_name), "README.md")
