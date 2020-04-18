@@ -2,62 +2,62 @@
 
 import shutil
 import os
-import string
 import sys
 
 #global rebar3 config for auto compiling
 class GlobalRebar3Config:
     @staticmethod
-    def removeConfig():
-        os.system('rm -rf ~/.config/rebar3/rebar.config')
+    def remove_config():
+        os.system('rm -rf ~/.config/rebar3')
 
     @staticmethod
-    def setConfig():
+    def set_config():
+        os.system('mkdir -p ~/.config/rebar3')
         os.system('echo  "{plugins, [rebar3_auto]}." > ~/.config/rebar3/rebar.config')
 
 
 #rebar.config in project
 class ProjectRebarConfig:
-    def __init__(self, configFile):
-        self.__configFile = configFile
+    def __init__(self, config_file):
+        self.__config_file = config_file
 
     def append(self, content):
-        file = open(self.__configFile, "a+")
+        file = open(self.__config_file, "a+")
         file.write(content)
         file.close()
 
-    def replace(self, oldContent, newContent):
-        self.makeBakFile()
+    def replace(self, old_content, new_content):
+        self.make_bak_file()
 
-        bakFile = open(self.getBakFileName(), "r+")
-        newFile = open(self.__configFile, "w+")
+        bak_file = open(self.get_bak_file_name(), "r+")
+        new_file = open(self.__config_file, "w+")
 
-        for line in bakFile.readlines():
-            if( line.find(oldContent) != -1 ):
-                line = line.replace(oldContent,newContent)
-            newFile.write(line)
-        bakFile.close()
-        self.removeBakFile()
-        newFile.close()
+        for line in bak_file.readlines():
+            if( line.find(old_content) != -1):
+                line = line.replace(old_content, new_content)
+            new_file.write(line)
+        bak_file.close()
+        self.remove_bak_file()
+        new_file.close()
 
-    def makeBakFile(self):
-        shutil.copyfile(self.__configFile, self.getBakFileName())
+    def make_bak_file(self):
+        shutil.copyfile(self.__config_file, self.get_bak_file_name())
 
-    def removeBakFile(self):
-        os.remove(self.getBakFileName())
+    def remove_bak_file(self):
+        os.remove(self.get_bak_file_name())
 
-    def getBakFileName(self):
-        return self.__configFile + ".bak"
+    def get_bak_file_name(self):
+        return self.__config_file + ".bak"
 
 # escipt
 class EscriptSetting:
-    def __init__(self, dirPath):
-        self.__modulePath = dirPath
+    def __init__(self, dir_path):
+        self.__module_path = dir_path
 
     def writeEscriptTemplate(self, escriptFileName):
 
-        moduleName = os.path.splitext(escriptFileName)[0]
-        content = "-module(%s).\r\n" % (moduleName)
+        module_name = os.path.splitext(escriptFileName)[0]
+        content = "-module(%s).\r\n" % (module_name)
 
         content += "\r\n"
         content += "-export([main/1]).\r\n"
@@ -69,20 +69,20 @@ class EscriptSetting:
         content += "  io:format(\"*********************************************************~n\"),\r\n"
         content += "  io:format(\"~n\")."
 
-        fullPath = os.path.join(self.__modulePath, escriptFileName)
+        fullPath = os.path.join(self.__module_path, escriptFileName)
         file = open(fullPath, "w+")
         file.write(content)
         file.close()
 
 # eunit
 class TestTemplateSetting:
-    def __init__(self, dirPath):
-        self.__modulePath = dirPath
+    def __init__(self, dir_path):
+        self.__module_path = dir_path
 
-    def writeEunitTemplate(self, eunitTemplateFileName):
-        self.checkDir()
+    def writeEunitTemplate(self, eunit_template_file_name):
+        self.check_dir()
 
-        moduleName = os.path.splitext(eunitTemplateFileName)[0]
+        moduleName = os.path.splitext(eunit_template_file_name)[0]
         content = "-module(%s).\r\n" % (moduleName)
 
         content += "\r\n"
@@ -91,18 +91,18 @@ class TestTemplateSetting:
         content += "simple_test() ->\r\n"
         content += "    ?assert(true)."
 
-        fullPath = os.path.join(self.__modulePath, eunitTemplateFileName)
-        file = open(fullPath, "w+")
+        full_path = os.path.join(self.__module_path, eunit_template_file_name)
+        file = open(full_path, "w+")
         file.write(content)
         file.close()
 
-    def writeCtTemplate(self, ctTemplateFileName):
-        self.checkDir()
+    def writeCtTemplate(self, ct_template_file_name):
+        self.check_dir()
 
-        moduleName = os.path.splitext(ctTemplateFileName)[0]
+        module_name = os.path.splitext(ct_template_file_name)[0]
 
         content = "%% http://erlang.org/doc/apps/common_test/write_test_chapter.html\r\n"
-        content += "-module(%s).\r\n" % (moduleName)
+        content += "-module(%s).\r\n" % (module_name)
 
         content += "\r\n"
         content += "-include_lib(\"common_test/include/ct.hrl\").\r\n"
@@ -174,23 +174,23 @@ class TestTemplateSetting:
         content += "  ct:log(\"in test_case4~n\"),\r\n"
         content += "  1=1."
 
-        fullPath = os.path.join(self.__modulePath, ctTemplateFileName)
+        fullPath = os.path.join(self.__module_path, ct_template_file_name)
         file = open(fullPath, "w+")
         file.write(content)
         file.close()
 
-    def checkDir(self):
-        isExisted = os.path.exists(self.__modulePath)
-        if not isExisted:
-            os.makedirs(self.__modulePath)
+    def check_dir(self):
+        is_existed = os.path.exists(self.__module_path)
+        if not is_existed:
+            os.makedirs(self.__module_path)
         return
 
 class ExampleSetting:
     @staticmethod
-    def createDir(examplePath):
-        isExists = os.path.exists(examplePath)
-        if not isExists:
-            os.makedirs(examplePath)
+    def create_dir(example_path):
+        is_exists = os.path.exists(example_path)
+        if not is_exists:
+            os.makedirs(example_path)
         return
 
 # class ScriptUtility:
@@ -210,26 +210,26 @@ class ExampleSetting:
 # different path
 class PathHelper:
     @staticmethod
-    def getAppPath(relPath, projectName):
-        return os.path.join(relPath, projectName)
+    def get_app_path(rel_path, project_name):
+        return os.path.join(rel_path, project_name)
 
     @staticmethod
-    def getRebarConfigPath(relPath, projectName, rebarConfigFileName):
-        return os.path.join(relPath, projectName, rebarConfigFileName)
+    def get_rebar_config_path(rel_path, project_name, rebar_config_file_name):
+        return os.path.join(rel_path, project_name, rebar_config_file_name)
 
     @staticmethod
-    def getTestDirPath(relPath, projectName, projectType):
-        if projectType == "release":
-            return os.path.join(relPath, projectName, "apps", projectName,"test")
+    def get_test_dir_path(rel_path, project_name, project_type):
+        if project_type == "release":
+            return os.path.join(rel_path, project_name, "apps", project_name, "test")
         else:
-            return os.path.join(relPath, projectName, "test")
+            return os.path.join(rel_path, project_name, "test")
 
     @staticmethod
-    def getExamplePath(relPath, projectName, projectType):
-        if projectType == "release":
-            return os.path.join(relPath, projectName, "apps", projectName, "src", "example")
+    def get_example_path(rel_path, project_name, project_type):
+        if project_type == "release":
+            return os.path.join(rel_path, project_name, "apps", project_name, "src", "example")
         else:
-            return os.path.join(relPath, projectName, "src", "example")
+            return os.path.join(rel_path, project_name, "src", "example")
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -240,73 +240,73 @@ if __name__ == '__main__':
         print("project_name?")
         os._exit(0)
 
-    projectType = sys.argv[1]
-    projectName = sys.argv[2]
-    relPath = os.getcwd()
+    project_type = sys.argv[1]
+    project_name = sys.argv[2]
+    rel_path = os.getcwd()
 
-    if projectType == "release":
-        os.system('rebar3 new release ' + projectName)
-    elif projectType == "app":
-        os.system('rebar3 new app ' + projectName)
-    elif projectType == "lib":
-        os.system('rebar3 new lib ' + projectName)
-    elif projectType == "escript":
-        os.system('rebar3 new escript ' + projectName)
+    if project_type == "release":
+        os.system('rebar3 new release ' + project_name)
+    elif project_type == "app":
+        os.system('rebar3 new app ' + project_name)
+    elif project_type == "lib":
+        os.system('rebar3 new lib ' + project_name)
+    elif project_type == "escript":
+        os.system('rebar3 new escript ' + project_name)
     else:
         print("not supported")
         os._exit(0)
 
-    projectConfigFile = ProjectRebarConfig(PathHelper.getRebarConfigPath(relPath, projectName, "rebar.config"))
+    project_config_file = ProjectRebarConfig(PathHelper.get_rebar_config_path(rel_path, project_name, "rebar.config"))
 
-    projectConfigFile.replace("{erl_opts, [debug_info]}.",
+    project_config_file.replace("{erl_opts, [debug_info]}.",
 
                               "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
-                              + "%%  {erl_opts, [no_debug_info]}. \r\n"
-                              + "%%  {erl_opts, [debug_info]}. \r\n"
-                              + "\r\n"
-                              + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
-                              + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
-                              + "%%  vim ~/.erlang.crypt \r\n"
-                              + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
-                              + "\r\n"
-                              + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
-                              + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
-                              + "\r\n"
-                              + "%%  ~/.erlang.crypt needed on compiling\r\n"
-                              + "{erl_opts, [encrypt_debug_info]}.\n")
+                                + "%%  {erl_opts, [no_debug_info]}. \r\n"
+                                + "%%  {erl_opts, [debug_info]}. \r\n"
+                                + "\r\n"
+                                + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
+                                + "%%  io:fwrite(\"~s~n\", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n"
+                                + "%%  vim ~/.erlang.crypt \r\n"
+                                + "%%  [{debug_info, des3_cbc, [], \"12345\"}]. \r\n"
+                                + "\r\n"
+                                + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
+                                + "%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,\"12345\"}}]}. \r\n"
+                                + "\r\n"
+                                + "%%  ~/.erlang.crypt needed on compiling\r\n"
+                                + "{erl_opts, [encrypt_debug_info]}.\n")
 
-    projectConfigFile.replace("{deps, []}.",
+    project_config_file.replace("{deps, []}.",
 
                               "{deps, [\r\n"
-                              + "%%  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
-                              + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
-                              + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
-                              + "]}.\r\n")
+                                + "%%  {sync, \".*\", {git, \"https://github.com/rustyio/sync\", {branch, \"master\"}}} \r\n"
+                                + "%%  {cowboy, \".*\",{git, \"https://github.com/ninenines/cowboy.git\", {branch, \"master\"}}},\r\n"
+                                + "%%  {cowboy, \"1.0.4\",{git, \"https://github.com/ninenines/cowboy.git\", {tag, \"1.0.4\"}}}\r\n"
+                                + "]}.\r\n")
 
-    projectConfigFile.append("\r\n"
-                             + "{pre_hooks, [ \r\n"
-                             + "  {clean, \"rm -rf ./_build/test\"}\r\n"
-                             + "]}.\r\n"
-                             + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
-                             + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
+    project_config_file.append("\r\n"
+                               + "{pre_hooks, [ \r\n"
+                               + "  {clean, \"rm -rf ./_build/test\"}\r\n"
+                               + "]}.\r\n"
+                               + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
+                               + "{shell, [{script_file, \"on_app_start.erl\"}]}.\r\n")
 
     # options for eunit
-    projectConfigFile.append("\r\n"
-                             + "{cover_enabled, true}.\r\n"
-                             + "{eunit_opts, [\r\n"
-                             + "    verbose, {\r\n"
-                             + "        report,{\r\n"
-                             + "            eunit_surefire,[\r\n"
-                             + "                {dir,\"./_build/test\"}\r\n"
-                             + "            ]\r\n"
-                             + "        }\r\n"
-                             + "    }\r\n"
-                             + "]}.\r\n")
+    project_config_file.append("\r\n"
+                               + "{cover_enabled, true}.\r\n"
+                               + "{eunit_opts, [\r\n"
+                               + "    verbose, {\r\n"
+                               + "        report,{\r\n"
+                               + "            eunit_surefire,[\r\n"
+                               + "                {dir,\"./_build/test\"}\r\n"
+                               + "            ]\r\n"
+                               + "        }\r\n"
+                               + "    }\r\n"
+                               + "]}.\r\n")
 
 
     class UpdateReadMe:
         @staticmethod
-        def update(path, fileName):
+        def update(path, file_name):
             content = "rebar3 auto"
             content += "\r\n"
             content += "------------------for auto compile------------------"
@@ -319,21 +319,21 @@ if __name__ == '__main__':
             content += "\r\n"
             content += "rebar3 clean"
 
-            fullPath = os.path.join(path, fileName)
+            fullPath = os.path.join(path, file_name)
             file = open(fullPath, "w+")
             file.write(content)
             file.close()
 
-    GlobalRebar3Config.removeConfig()
-    GlobalRebar3Config.setConfig()
+    GlobalRebar3Config.remove_config()
+    GlobalRebar3Config.set_config()
 
-    testTemplateSetting = TestTemplateSetting(PathHelper.getTestDirPath(relPath, projectName, projectType))
-    testTemplateSetting.writeEunitTemplate("template_eunit_test.erl")
-    testTemplateSetting.writeCtTemplate("template_SUITE.erl")
+    test_template_setting = TestTemplateSetting(PathHelper.get_test_dir_path(rel_path, project_name, project_type))
+    test_template_setting.writeEunitTemplate("template_eunit_test.erl")
+    test_template_setting.writeCtTemplate("template_SUITE.erl")
 
-    escriptSetting = EscriptSetting(PathHelper.getAppPath(relPath, projectName))
-    escriptSetting.writeEscriptTemplate("on_app_start.erl")
+    escript_setting = EscriptSetting(PathHelper.get_app_path(rel_path, project_name))
+    escript_setting.writeEscriptTemplate("on_app_start.erl")
 
-    ExampleSetting.createDir(PathHelper.getExamplePath(relPath, projectName, projectType))
+    ExampleSetting.create_dir(PathHelper.get_example_path(rel_path, project_name, project_type))
 
-    UpdateReadMe.update(PathHelper.getAppPath(relPath, projectName), "README.md")
+    UpdateReadMe.update(PathHelper.get_app_path(rel_path, project_name), "README.md")
