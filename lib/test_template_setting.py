@@ -3,16 +3,17 @@
 
 import os
 
+
 # eunit
 class TestTemplateSetting:
     def __init__(self, dir_path):
         self.__module_path = dir_path
 
-    def writeEunitTemplate(self, eunit_template_file_name):
+    def write_eunit_template(self, eunit_template_file_name):
         self.check_dir()
 
-        moduleName = os.path.splitext(eunit_template_file_name)[0]
-        content = "-module(%s).\r\n" % (moduleName)
+        module_name = os.path.splitext(eunit_template_file_name)[0]
+        content = "-module(%s).\r\n" % (module_name)
 
         content += "\r\n"
         content += '-include_lib("eunit/include/eunit.hrl").\r\n'
@@ -25,7 +26,7 @@ class TestTemplateSetting:
         file.write(content)
         file.close()
 
-    def writeCtTemplate(self, ct_template_file_name):
+    def write_ct_template(self, ct_template_file_name):
         self.check_dir()
 
         module_name = os.path.splitext(ct_template_file_name)[0]
@@ -105,8 +106,8 @@ class TestTemplateSetting:
         content += '  ct:log("in test_case4~n"),\r\n'
         content += "  1=1."
 
-        fullPath = os.path.join(self.__module_path, ct_template_file_name)
-        file = open(fullPath, "w+")
+        full_path = os.path.join(self.__module_path, ct_template_file_name)
+        file = open(full_path, "w+")
         file.write(content)
         file.close()
 

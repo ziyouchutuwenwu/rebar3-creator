@@ -2,26 +2,28 @@
 
 import os
 import sys
-
 from lib.project_rebar_config import ProjectRebarConfig
 from lib.path_helper import PathHelper
 from lib.example_setting import ExampleSetting
 from lib.escript_setting import EscriptSetting
 from lib.global_rebar3_config import GlobalRebar3Config
 from lib.test_template_setting import TestTemplateSetting
+from lib.tools_copy import ToolsCopy
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("please input mode, release, app, lib, escript?")
-        os._exit(0)
+        exit()
 
     elif len(sys.argv) == 2:
         print("project_name?")
-        os._exit(0)
+        exit()
 
     project_type = sys.argv[1]
     project_name = sys.argv[2]
     rel_path = os.getcwd()
+    project_path = PathHelper.get_project_path(rel_path, project_name)
 
     if project_type == "release":
         os.system("rebar3 new release " + project_name)
@@ -33,10 +35,10 @@ if __name__ == "__main__":
         os.system("rebar3 new escript " + project_name)
     else:
         print("not supported")
-        os._exit(0)
+        exit()
 
     project_config_file = ProjectRebarConfig(
-        PathHelper.get_rebar_config_path(rel_path, project_name, "rebar.config")
+        PathHelper.get_rebar_config_path(project_path, "rebar.config")
     )
 
     project_config_file.replace(
@@ -108,8 +110,8 @@ if __name__ == "__main__":
             content += "## `rebar3 as prod tar` 打包"
             content += "\r\n"
 
-            fullPath = os.path.join(path, file_name)
-            file = open(fullPath, "w+")
+            full_path = os.path.join(path, file_name)
+            file = open(full_path, "w+")
             file.write(content)
             file.close()
 
@@ -117,16 +119,17 @@ if __name__ == "__main__":
     GlobalRebar3Config.set_config()
 
     test_template_setting = TestTemplateSetting(
-        PathHelper.get_test_dir_path(rel_path, project_name, project_type)
+        PathHelper.get_test_dir_path(project_path, project_name, project_type)
     )
-    test_template_setting.writeEunitTemplate("template_eunit_test.erl")
-    test_template_setting.writeCtTemplate("template_SUITE.erl")
+    test_template_setting.write_eunit_template("template_eunit_test.erl")
+    test_template_setting.write_ct_template("template_SUITE.erl")
 
-    escript_setting = EscriptSetting(PathHelper.get_app_path(rel_path, project_name))
-    escript_setting.writeEscriptTemplate("on_app_start.erl")
+    escript_setting = EscriptSetting(PathHelper.get_project_path(rel_path, project_name))
+    escript_setting.write_escript_template("on_app_start.erl")
 
     ExampleSetting.create_dir(
-        PathHelper.get_example_path(rel_path, project_name, project_type)
+        PathHelper.get_example_path(project_path, project_name, project_type)
     )
 
-    UpdateReadMe.update(PathHelper.get_app_path(rel_path, project_name), "README.md")
+    ToolsCopy.copy_tools_to_project_dir(project_path)
+    UpdateReadMe.update(PathHelper.get_project_path(rel_path, project_name), "README.md")

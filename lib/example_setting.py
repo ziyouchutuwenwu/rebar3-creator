@@ -3,7 +3,9 @@
 
 import os
 
+
 class ExampleSetting:
+
     @staticmethod
     def create_dir(example_path):
         is_exists = os.path.exists(example_path)

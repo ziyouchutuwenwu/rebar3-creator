@@ -3,6 +3,7 @@
 
 import os
 
+
 # global rebar3 config for auto compiling
 class GlobalRebar3Config:
     @staticmethod
