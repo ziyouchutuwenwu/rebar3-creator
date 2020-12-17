@@ -45,7 +45,7 @@ if __name__ == "__main__":
         "{erl_opts, [debug_info]}.",
         "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
         + "%%  {erl_opts, [no_debug_info]}. \r\n"
-        + "%%  {erl_opts, [debug_info]}. \r\n"
+        + "{erl_opts, [debug_info]}. \r\n"
         + "\r\n"
         + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
         + '%%  io:fwrite("~s~n", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n'
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         + '%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,"12345"}}]}. \r\n'
         + "\r\n"
         + "%%  ~/.erlang.crypt needed on compiling\r\n"
-        + "{erl_opts, [encrypt_debug_info]}.\n",
+        + "%%  {erl_opts, [encrypt_debug_info]}.\n",
     )
 
     project_config_file.replace(
