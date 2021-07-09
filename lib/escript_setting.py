@@ -17,11 +17,9 @@ class EscriptSetting:
         content += "\r\n"
         content += "-export([main/1]).\r\n"
         content += "\r\n"
-        content += "main(Args) ->\r\n"
+        content += "main(_Args) ->\r\n"
         content += '  io:format("~n"),\r\n'
-        content += '  io:format("*********************************************************~n"),\r\n'
-        content += '  io:format("on app start~n"),\r\n'
-        content += '  io:format("*********************************************************~n"),\r\n'
+        content += '  io:format("请在 bash 命令行运行 ./tools/debug_enhancer~n"),\r\n'
         content += '  io:format("~n").'
 
         full_path = os.path.join(self.__module_path, escript_file_name)
