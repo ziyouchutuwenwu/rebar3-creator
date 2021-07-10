@@ -2,13 +2,9 @@
 
 import os
 import sys
-from lib.project_rebar_config import ProjectRebarConfig
 from lib.path_helper import PathHelper
 from lib.example_setting import ExampleSetting
-from lib.escript_setting import EscriptSetting
-from lib.global_rebar3_config import GlobalRebar3Config
-from lib.test_template_setting import TestTemplateSetting
-from lib.tools_copy import ToolsCopy
+from lib.copy_helper import CopyHelper
 
 
 if __name__ == "__main__":
@@ -37,99 +33,16 @@ if __name__ == "__main__":
         print("not supported")
         exit()
 
-    project_config_file = ProjectRebarConfig(
-        PathHelper.get_rebar_config_path(project_path, "rebar.config")
-    )
-
-    project_config_file.replace(
-        "{erl_opts, [debug_info]}.",
-        "%%  {erl_opts, [native, {hipe, [verbose]}, debug_info]}. \r\n"
-        + "%%  {erl_opts, [no_debug_info]}. \r\n"
-        + "{erl_opts, [debug_info]}. \r\n"
-        + "\r\n"
-        + "%%  {ok, {_, [{abstract_code, {_, Ac}}]}} = beam_lib:chunks(code:which(a), [abstract_code]). \r\n"
-        + '%%  io:fwrite("~s~n", [erl_prettypr:format(erl_syntax:form_list(Ac))]). \r\n'
-        + "%%  vim ~/.erlang.crypt \r\n"
-        + '%%  [{debug_info, des3_cbc, [], "12345"}]. \r\n'
-        + "\r\n"
-        + "%%  ~/.erlang.crypt not needed on compiling, only neened on debugging \r\n"
-        + '%%  {erl_opts, [debug_info,{debug_info_key,{des3_cbc,"12345"}}]}. \r\n'
-        + "\r\n"
-        + "%%  ~/.erlang.crypt needed on compiling\r\n"
-        + "%%  {erl_opts, [encrypt_debug_info]}.\n",
-    )
-
-    project_config_file.replace(
-        "{deps, []}.",
-        "{deps, [\r\n"
-        + '%%  {sync, ".*", {git, "https://github.com/rustyio/sync", {branch, "master"}}} \r\n'
-        + '%%  {cowboy, ".*",{git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}},\r\n'
-        + '%%  {cowboy, "1.0.4",{git, "https://github.com/ninenines/cowboy.git", {tag, "1.0.4"}}}\r\n'
-        + "]}.\r\n",
-    )
-
-    project_config_file.append(
-        "\r\n"
-        + "{pre_hooks, [ \r\n"
-        + '  {clean, "rm -rf ./_build/test"}\r\n'
-        + "]}.\r\n"
-        + "{provider_hooks, [{pre, [{clean}]}]}.\r\n"
-        + '{shell, [{script_file, "on_app_start.erl"}]}.\r\n'
-    )
-
-    # options for eunit
-    project_config_file.append(
-        "\r\n"
-        + "{cover_enabled, true}.\r\n"
-        + "{eunit_opts, [\r\n"
-        + "    verbose, {\r\n"
-        + "        report,{\r\n"
-        + "            eunit_surefire,[\r\n"
-        + '                {dir,"./_build/test"}\r\n'
-        + "            ]\r\n"
-        + "        }\r\n"
-        + "    }\r\n"
-        + "]}.\r\n"
-    )
-
-    class UpdateReadMe:
-        @staticmethod
-        def update(path, file_name):
-            content = "# 说明"
-            content += "\r\n"
-            content += "\r\n"
-            content += "`rebar3 deps` 获取依赖"
-            content += "\r\n"
-            content += "\r\n"
-            content += "`rebar3 compile` 编译"
-            content += "\r\n"
-            content += "\r\n"
-            content += "`rebar3 shell` 进入调试 shell"
-            content += "\r\n"
-            content += "\r\n"
-            content += "`rebar3 as prod tar` 打包"
-            content += "\r\n"
-
-            full_path = os.path.join(path, file_name)
-            file = open(full_path, "w+")
-            file.write(content)
-            file.close()
-
-    GlobalRebar3Config.remove_config()
-    GlobalRebar3Config.set_config()
-
-    test_template_setting = TestTemplateSetting(
-        PathHelper.get_test_dir_path(project_path, project_name, project_type)
-    )
-    test_template_setting.write_eunit_template("template_eunit_test.erl")
-    test_template_setting.write_ct_template("template_SUITE.erl")
-
-    escript_setting = EscriptSetting(PathHelper.get_project_path(rel_path, project_name))
-    escript_setting.write_escript_template("on_app_start.erl")
+    # GlobalRebar3Config.remove_config()
+    # GlobalRebar3Config.set_config()
 
     ExampleSetting.create_dir(
         PathHelper.get_example_path(project_path, project_name, project_type)
     )
 
-    ToolsCopy.copy_tools_to_project_dir(project_path)
-    UpdateReadMe.update(PathHelper.get_project_path(rel_path, project_name), "README.md")
+    CopyHelper.copy_tools_to_project_dir(project_path)
+    CopyHelper.copy_rebar_config_to_project_dir(project_path)
+    CopyHelper.copy_escripts_to_project_dir(project_path)
+    CopyHelper.copy_tests_to_project_dir(project_path)
+    CopyHelper.copy_vscode_debug_config_project_dir(project_path)
+    CopyHelper.copy_readme_to_project_dir(project_path)
