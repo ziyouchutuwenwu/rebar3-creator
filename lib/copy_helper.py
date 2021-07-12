@@ -24,11 +24,8 @@ class CopyHelper:
     def copy_escripts_to_project_dir(project_dir):
         base_dir = os.path.dirname(__file__) + "/../"
         src_dir = os.path.join(base_dir, "templates", "escripts")
-        dist_dir = project_dir
-        for root, _dirs, files in os.walk(src_dir):
-            for file in files:
-                src_file = os.path.join(root, file)
-                shutil.copy(src_file, dist_dir)
+        dist_dir = os.path.join(project_dir, "escripts")
+        shutil.copytree(src_dir, dist_dir)
 
     @staticmethod
     def copy_rebar_config_to_project_dir(project_dir):
