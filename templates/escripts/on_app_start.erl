@@ -8,7 +8,5 @@ main(_Args) ->
   interprete_modules().
 
 interprete_modules() ->
-  int:ni(demo_sup),
-  int:ni(demo_app),
-
+  % int:ni(demo_sup),
   io:format("输入 int:interpreted(). 或者 il(). 查看模块列表~n").
