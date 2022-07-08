@@ -46,3 +46,6 @@ if __name__ == "__main__":
     CopyHelper.copy_tests_to_project_dir(project_path)
     CopyHelper.copy_vscode_debug_config_to_project_dir(project_path)
     CopyHelper.copy_readme_to_project_dir(project_path)
+
+    if project_type == "release":
+        CopyHelper.copy_crypt_key_to_project_dir(project_path)

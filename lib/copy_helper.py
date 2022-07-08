@@ -38,6 +38,13 @@ class CopyHelper:
                 shutil.copy(src_file, dist_dir)
 
     @staticmethod
+    def copy_crypt_key_to_project_dir(project_dir):
+        base_dir = os.path.dirname(__file__) + "/../"
+        src_file = os.path.join(base_dir, "templates", "crypt_key", "erlang.crypt")
+        dist_dir = os.path.join(project_dir, ".erlang.crypt")
+        shutil.copy(src_file, dist_dir)
+
+    @staticmethod
     def copy_readme_to_project_dir(project_dir):
         base_dir = os.path.dirname(__file__) + "/../"
         src_file = os.path.join(base_dir, "templates", "README.md")
