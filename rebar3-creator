@@ -2,8 +2,9 @@
 
 import os
 import sys
-from lib.path_helper import PathHelper
+
 from lib.example_setting import ExampleSetting
+from lib.path_helper import PathHelper
 from lib.copy_helper import CopyHelper
 
 
@@ -19,7 +20,9 @@ if __name__ == "__main__":
     project_type = sys.argv[1]
     project_name = sys.argv[2]
     rel_path = os.getcwd()
+
     project_path = PathHelper.get_project_path(rel_path, project_name)
+    app_root_path = PathHelper.get_apps_basic_path(project_path, project_name, project_type)
 
     if project_type == "release":
         os.system("rebar3 new release " + project_name)
@@ -36,11 +39,13 @@ if __name__ == "__main__":
     # GlobalRebar3Config.remove_config()
     # GlobalRebar3Config.set_config()
 
+    # example 只做目录创建
     ExampleSetting.create_dir(
         PathHelper.get_example_path(project_path, project_name, project_type)
     )
 
     CopyHelper.copy_tools_to_project_dir(project_path)
+    CopyHelper.copy_debug_essentials_to_project_dir(app_root_path, project_name)
     CopyHelper.copy_rebar_config_to_project_dir(project_path)
     CopyHelper.copy_escripts_to_project_dir(project_path)
     CopyHelper.copy_tests_to_project_dir(project_path)

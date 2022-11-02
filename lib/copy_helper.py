@@ -14,6 +14,17 @@ class CopyHelper:
         shutil.copytree(src_dir, dist_dir)
 
     @staticmethod
+    def copy_debug_essentials_to_project_dir(project_dir, project_name):
+        base_dir = os.path.dirname(__file__) + "/../"
+        src_dir = os.path.join(base_dir, "templates", "debug")
+        dist_dir = os.path.join(project_dir, "src/debug")
+        shutil.copytree(src_dir, dist_dir)
+        # 修改 reloading 文件内模块名
+        reloading_file_name = os.path.join(dist_dir, "reloading.erl")
+        cmd = "sed -i 's/XXX/%s/g' %s" % (project_name, reloading_file_name)
+        os.system(cmd)
+
+    @staticmethod
     def copy_tools_to_project_dir(project_dir):
         base_dir = os.path.dirname(__file__) + "/../"
         src_dir = os.path.join(base_dir, "templates", "tools")
