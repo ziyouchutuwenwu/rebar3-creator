@@ -2,7 +2,6 @@
 -module(template_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
-
 -compile(export_all).
 
 suite() ->
