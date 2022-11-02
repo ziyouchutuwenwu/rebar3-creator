@@ -5,7 +5,8 @@
 
 reload() ->
   EBinDir = "./_build/default/lib/" ++ ?PROJECT_NAME ++ "/ebin/",
-  SrcFileList = filelib:fold_files("./src/", ".*.erl", true, fun(F, AccIn) -> [F | AccIn] end, []),
+  % SrcFileList = filelib:fold_files("./src/", ".*.erl", true, fun(F, AccIn) -> [F | AccIn] end, []),
+  SrcFileList = filelib:wildcard("src/**/*.erl"),
 
   lists:foreach(fun(File) ->
       ModName = filename:rootname(filename:basename(File)),
