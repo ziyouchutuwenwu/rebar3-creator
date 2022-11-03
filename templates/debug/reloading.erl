@@ -8,17 +8,22 @@ reload() ->
   % SrcFileList = filelib:fold_files("./src/", ".*.erl", true, fun(F, AccIn) -> [F | AccIn] end, []),
   SrcFileList = filelib:wildcard("src/**/*.erl"),
 
-  lists:foreach(fun(File) ->
-      ModName = filename:rootname(filename:basename(File)),
-      ModAtom = list_to_atom(ModName),
+  lists:foreach(fun(SrcFile) ->
+      FileName = filename:rootname(filename:basename(SrcFile)),
+      ModAtom = list_to_atom(FileName),
 
       case ModAtom of
-        ?MODULE -> ignore;
+        ?MODULE ->
+          ignore;
         _ ->
-          compile:file(File, {outdir, EBinDir}),
-          code:delete(ModAtom),
-          code:purge(ModAtom),
-          code:load_file(ModAtom)
+          case compile:file(SrcFile, {outdir, EBinDir}) of
+            {ok, ModName} ->
+              code:delete(ModName),
+              code:purge(ModName),
+              code:load_file(ModName);
+            _ ->
+              io:format("模块 ~p 编译失败，请检查~n", [SrcFile])
+          end
       end
   end,
   SrcFileList).
