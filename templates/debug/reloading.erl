@@ -18,9 +18,10 @@ reload() ->
         _ ->
           case compile:file(SrcFile, {outdir, EBinDir}) of
             {ok, ModName} ->
-              code:delete(ModName),
-              code:purge(ModName),
-              code:load_file(ModName);
+              c:l(ModName);
+              % code:delete(ModName),
+              % code:purge(ModName),
+              % code:load_file(ModName);
             _ ->
               io:format("模块 ~p 编译失败，请检查~n", [SrcFile])
           end
