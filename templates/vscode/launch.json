@@ -12,7 +12,7 @@
         "--setcookie",
         "123456",
         "--eval",
-        "reloading:reload()."
+        "demo:demo()."
       ],
       "projectnode": "debug@localhost",
       "cookie": "123456",
