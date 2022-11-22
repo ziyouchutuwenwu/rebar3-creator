@@ -10,7 +10,9 @@
         "--name",
         "debug@localhost",
         "--setcookie",
-        "123456"
+        "123456",
+        "--eval",
+        "reloading:reload()."
       ],
       "projectnode": "debug@localhost",
       "cookie": "123456",
