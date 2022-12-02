@@ -8,13 +8,13 @@
         "rebar3",
         "shell",
         "--name",
-        "debug@localhost",
+        "debug@127.0.0.1",
         "--setcookie",
         "123456",
         "--eval",
         "demo:demo()."
       ],
-      "projectnode": "debug@localhost",
+      "projectnode": "debug@127.0.0.1",
       "cookie": "123456",
       "timeout": 300,
       "cwd": "${workspaceRoot}"
