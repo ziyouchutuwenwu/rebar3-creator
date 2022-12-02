@@ -10,7 +10,7 @@
         "shell",
         // 不支持 ip 后缀作为 long name
         // sname 模式或者带域名的 long name 都支持
-        "--name",
+        "--sname",
         "debug@localhost",
         "--setcookie",
         "123456"
