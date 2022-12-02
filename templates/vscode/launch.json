@@ -1,20 +1,25 @@
 {
+  "version": "0.2.0",
   "configurations": [
     {
-      "name": "debug",
+      "name": "start",
       "type": "erlang",
       "request": "launch",
       "runinterminal": [
         "rebar3",
         "shell",
-        "--name",
-        "debug@127.0.0.1",
+        "--sname",
+        "debug",
         "--setcookie",
-        "123456",
-        "--eval",
-        "demo:demo()."
+        "123456"
       ],
-      "projectnode": "debug@127.0.0.1",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "attach",
+      "type": "erlang",
+      "request": "attach",
+      "projectnode": "debug",
       "cookie": "123456",
       "timeout": 300,
       "cwd": "${workspaceRoot}"
