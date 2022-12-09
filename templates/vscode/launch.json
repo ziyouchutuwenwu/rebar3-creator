@@ -11,7 +11,7 @@
         // 不支持 ip 后缀作为 long name
         // sname 模式或者带域名的 long name 都支持
         "--sname",
-        "debug@localhost",
+        "erl-dbg@localhost",
         "--setcookie",
         "123456"
       ],
@@ -21,7 +21,7 @@
       "name": "attach",
       "type": "erlang",
       "request": "attach",
-      "projectnode": "debug@localhost",
+      "projectnode": "erl-dbg@localhost",
       "cookie": "123456",
       "timeout": 300,
       "cwd": "${workspaceRoot}"
