@@ -2,7 +2,6 @@
 
 import os
 import sys
-
 from lib.example_setting import ExampleSetting
 from lib.path_helper import PathHelper
 from lib.copy_helper import CopyHelper
@@ -44,7 +43,7 @@ if __name__ == "__main__":
         PathHelper.get_example_path(project_path, project_name, project_type)
     )
 
-    CopyHelper.copy_tools_to_project_dir(project_path)
+
     CopyHelper.copy_debug_essentials_to_project_dir(app_root_path, project_name)
     CopyHelper.copy_rebar_config_to_project_dir(project_path)
     CopyHelper.copy_escripts_to_project_dir(project_path)
