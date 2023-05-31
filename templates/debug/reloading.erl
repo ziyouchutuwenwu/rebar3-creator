@@ -15,12 +15,12 @@ reload() ->
         ?MODULE ->
           ignore;
         _ ->
-          c:l(ModNameAtom)
+          c:c(SrcFile)
           % case compile:file(SrcFile, {outdir, EBinDir}) of
           %   {ok, ModName} ->
-          %     % code:delete(ModName),
-          %     code:purge(ModName),
-          %     code:load_file(ModName);
+          %     % code:purge(ModName),
+          %     % code:load_file(ModName);
+          %     c:l(ModName);
           %   _ ->
           %     io:format("模块 ~p 编译失败，请检查~n", [SrcFile])
           % end
