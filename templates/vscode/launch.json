@@ -1,26 +1,22 @@
 {
   "version": "0.2.0",
   "configurations": [
+    /*
+      long name:
+        ip 不支持
+        域名支持
+      short name:
+        纯主机名，不带域名支持
+        带域名也支持
+    */
+    /*
+      远程调试需要先运行
+      rebar3 shell --sname erl-dbg@localhost --setcookie 123456
+    */
     {
-      "name": "start",
+      "name": "debug",
       "type": "erlang",
       "request": "launch",
-      "runinterminal": [
-        "rebar3",
-        "shell",
-        // 不支持 ip 后缀作为 long name
-        // sname 模式或者带域名的 long name 都支持
-        "--sname",
-        "erl-dbg@localhost",
-        "--setcookie",
-        "123456"
-      ],
-      "cwd": "${workspaceRoot}"
-    },
-    {
-      "name": "attach",
-      "type": "erlang",
-      "request": "attach",
       "projectnode": "erl-dbg@localhost",
       "cookie": "123456",
       "timeout": 300,
